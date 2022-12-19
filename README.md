@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/bstats/servers/7354">
 </p>
 
-# MineableSpawners
+# RevoMineableSpawners
 This plugin allows players to mine and drop spawners, receive them via command and more!​
 
 
@@ -45,5 +45,3 @@ This plugin allows players to mine and drop spawners, receive them via command a
 We use bStats to collect anonymous metrics (only grabs stuff like playercount, java version, server version and such). This helps me get some information about how used my plugin is and keeps me motivated. If you wish to turn it off you can in ./plugins/bStats/config.yml
 
 Everything is configurable and explained in the configuration file!
-
-Download link: [https://www.spigotmc.org/resources/mineablespawners.59921/](https://www.spigotmc.org/resources/mineablespawners.59921/)
