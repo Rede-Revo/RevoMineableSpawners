@@ -6,7 +6,7 @@
 
     <groupId>com.dnyferguson</groupId>
     <artifactId>RevoMineableSpawners</artifactId>
-    <version>3.1.6</version>
+    <version>3.2.0</version>
     <packaging>jar</packaging>
 
     <name>RevoMineableSpawners</name>

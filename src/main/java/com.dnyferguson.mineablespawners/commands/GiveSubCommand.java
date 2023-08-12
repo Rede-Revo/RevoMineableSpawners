@@ -15,13 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import static com.dnyferguson.mineablespawners.utils.TranslateMobs.getTranslatedName;
+
 public class GiveSubCommand {
 
     public GiveSubCommand() {}
 
     public void execute(MineableSpawners plugin, CommandSender sender, String target, String type, String amt) {
         Player targetPlayer = Bukkit.getPlayer(target);
-        if (target == null || targetPlayer == null) {
+        if (targetPlayer == null) {
             plugin.getConfigurationHandler().sendMessage("give", "player-does-not-exist", sender);
             return;
         }
@@ -33,6 +35,7 @@ public class GiveSubCommand {
             plugin.getConfigurationHandler().sendMessage("give", "invalid-type", sender);
             return;
         }
+        String translatedName = getTranslatedName(entityType.name());
 
         int amount = 0;
         try {
@@ -46,7 +49,7 @@ public class GiveSubCommand {
         ItemMeta meta = item.getItemMeta();
         item.setAmount(amount);
 
-        String mobFormatted = Chat.uppercaseStartingLetters(entityType.name());
+        String mobFormatted = Chat.uppercaseStartingLetters(translatedName);
         meta.setDisplayName(Chat.format(plugin.getConfigurationHandler().getMessage("global", "name").replace("%mob%", mobFormatted)));
         List<String> newLore = new ArrayList<>();
         if (plugin.getConfigurationHandler().getList("global", "lore") != null && plugin.getConfigurationHandler().getBoolean("global", "lore-enabled")) {

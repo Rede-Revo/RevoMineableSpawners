@@ -6,10 +6,16 @@ import com.dnyferguson.mineablespawners.listeners.*;
 import com.dnyferguson.mineablespawners.metrics.Metrics;
 import com.dnyferguson.mineablespawners.utils.ConfigurationHandler;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
 
 public final class MineableSpawners extends JavaPlugin {
     private ConfigurationHandler configurationHandler;
@@ -20,6 +26,8 @@ public final class MineableSpawners extends JavaPlugin {
     public void onEnable() {
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
+        createTranslationsConfig();
+        saveTranslationsConfig();
 
         configurationHandler = new ConfigurationHandler(this);
 
@@ -52,6 +60,42 @@ public final class MineableSpawners extends JavaPlugin {
         Metrics metrics = new Metrics(this, pluginId);
     }
 
+    private FileConfiguration translationsConfig = null;
+    private File translationsConfigFile = null;
+
+    public void reloadTranslationsConfig() {
+        if (translationsConfigFile == null) {
+            translationsConfigFile = new File(getDataFolder(), "translations.yml");
+        }
+        translationsConfig = YamlConfiguration.loadConfiguration(translationsConfigFile);
+    }
+
+    public FileConfiguration getTranslationsConfig() {
+        if (translationsConfig == null) {
+            reloadTranslationsConfig();
+        }
+        return translationsConfig;
+    }
+
+    public void saveTranslationsConfig() {
+        if (translationsConfig == null || translationsConfigFile == null) {
+            return;
+        }
+        try {
+            getTranslationsConfig().save(translationsConfigFile);
+        } catch (IOException ex) {
+            getLogger().log(Level.SEVERE, "Não foi possível salvar " + translationsConfigFile, ex);
+        }
+    }
+
+    public void createTranslationsConfig() {
+        translationsConfigFile = new File(getDataFolder(), "translations.yml");
+        if (!translationsConfigFile.exists()) {
+            translationsConfigFile.getParentFile().mkdirs();
+            saveResource("translations.yml", false);
+        }
+    }
+
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
@@ -61,7 +105,7 @@ public final class MineableSpawners extends JavaPlugin {
             return false;
         }
         econ = rsp.getProvider();
-        return econ != null;
+        return true;
     }
 
     public ConfigurationHandler getConfigurationHandler() {

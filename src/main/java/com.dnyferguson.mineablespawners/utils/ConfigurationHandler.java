@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Map;
 
 public class ConfigurationHandler {
-    private MineableSpawners plugin;
+    private final MineableSpawners plugin;
 
-    private Map<String, Map<String, String>> messages = new HashMap<>();
-    private Map<String, Map<String, Boolean>> booleans = new HashMap<>();
-    private Map<String, Map<String, List<String>>> lists = new HashMap<>();
-    private Map<String, Map<String, Double>> doubles = new HashMap<>();
-    private Map<String, Map<String, Integer>> integers = new HashMap<>();
+    private final Map<String, Map<String, String>> messages = new HashMap<>();
+    private final Map<String, Map<String, Boolean>> booleans = new HashMap<>();
+    private final Map<String, Map<String, List<String>>> lists = new HashMap<>();
+    private final Map<String, Map<String, Double>> doubles = new HashMap<>();
+    private final Map<String, Map<String, Integer>> integers = new HashMap<>();
 
     public ConfigurationHandler(MineableSpawners plugin) {
         this.plugin = plugin;

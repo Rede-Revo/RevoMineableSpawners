@@ -16,12 +16,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
+import static com.dnyferguson.mineablespawners.utils.TranslateMobs.getTranslatedName;
 
 public class SpawnerMineListener implements Listener {
     private final MineableSpawners plugin;
@@ -40,7 +40,8 @@ public class SpawnerMineListener implements Listener {
                 String permission = args[0];
                 double chance = Double.parseDouble(args[1]);
                 permissionChances.put(permission, chance);
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+            }
         }
         for (String line : plugin.getConfigurationHandler().getList("mining", "prices")) {
             try {
@@ -59,7 +60,7 @@ public class SpawnerMineListener implements Listener {
         }
     }
 
-    @EventHandler (priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onSpawnerMine(BlockBreakEvent e) {
         if (e.isCancelled()) {
             return;
@@ -159,15 +160,15 @@ public class SpawnerMineListener implements Listener {
 
         // check chances
         double dropChance = 1;
-        if (plugin.getConfigurationHandler().getBoolean("mining", "use-perm-based-chances") && permissionChances.size() > 0) {
+        if (plugin.getConfigurationHandler().getBoolean("mining", "use-perm-based-chances") && !permissionChances.isEmpty()) {
             for (String perm : permissionChances.keySet()) {
                 if (player.hasPermission(perm)) {
-                    dropChance = permissionChances.get(perm)/100;
+                    dropChance = permissionChances.get(perm) / 100;
                     break;
                 }
             }
         } else {
-            dropChance = plugin.getConfigurationHandler().getDouble("mining", "chance")/100;
+            dropChance = plugin.getConfigurationHandler().getDouble("mining", "chance") / 100;
         }
         if (dropChance != 1) {
             double random = Math.random();
@@ -182,10 +183,31 @@ public class SpawnerMineListener implements Listener {
     }
 
     private void giveSpawner(BlockBreakEvent e, EntityType entityType, Location loc, Player player, Block block, double cost) {
+        String translatedName = getTranslatedName(entityType.name());
+
         ItemStack item = MineableSpawners.getApi().getSpawnerFromEntityType(entityType);
 
+        // Modificar o nome do spawner para o nome traduzido
+        String mobFormatted = Chat.uppercaseStartingLetters(translatedName);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(Chat.format(plugin.getConfigurationHandler().getMessage("global", "name").replace("%mob%", mobFormatted)));
+            List<String> newLore = new ArrayList<>();
+            if (plugin.getConfigurationHandler().getList("global", "lore") != null && plugin.getConfigurationHandler().getBoolean("global", "lore-enabled")) {
+                for (String line : plugin.getConfigurationHandler().getList("global", "lore")) {
+                    newLore.add(Chat.format(line).replace("%mob%", mobFormatted));
+                }
+                meta.setLore(newLore);
+            }
+            item.setItemMeta(meta);
+        }
+
         if (cost > 0) {
-            player.sendMessage(plugin.getConfigurationHandler().getMessage("mining", "transaction-success").replace("%type%", Chat.uppercaseStartingLetters(entityType.name())).replace("%cost%", df.format(cost)).replace("%balance%", df.format(plugin.getEcon().getBalance(player))));
+            player.sendMessage(plugin.getConfigurationHandler()
+                    .getMessage("mining", "transaction-success")
+                    .replace("%type%", Chat.uppercaseStartingLetters(translatedName))
+                    .replace("%cost%", df.format(cost))
+                    .replace("%balance%", df.format(plugin.getEcon().getBalance(player))));
         }
 
         if (plugin.getConfigurationHandler().getBoolean("mining", "drop-to-inventory")) {
