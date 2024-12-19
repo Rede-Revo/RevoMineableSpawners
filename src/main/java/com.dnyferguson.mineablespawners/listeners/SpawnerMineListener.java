@@ -159,37 +159,42 @@ public class SpawnerMineListener implements Listener {
         }
 
 // check chances
-        double dropChance = 1.0;
+        double dropChance = 0.0;
+
+// Verifica chances baseadas em permissões
         if (plugin.getConfigurationHandler().getBoolean("mining", "use-perm-based-chances") && !permissionChances.isEmpty()) {
             for (String perm : permissionChances.keySet()) {
                 if (player.hasPermission(perm)) {
-                    dropChance = permissionChances.get(perm) / 100;
+                    dropChance = permissionChances.get(perm); // Usa a chance base da permissão
                     break;
                 }
             }
         } else {
-            dropChance = plugin.getConfigurationHandler().getDouble("mining", "chance") / 100;
+            dropChance = plugin.getConfigurationHandler().getDouble("mining", "chance");
         }
 
+// Bônus baseado no Silk Touch
         int silkTouchLevel = 0;
         if (itemInHand.containsEnchantment(Enchantment.SILK_TOUCH)) {
             silkTouchLevel = itemInHand.getEnchantmentLevel(Enchantment.SILK_TOUCH);
         }
-        if (silkTouchLevel >= 2) {
-            int bonusLevels = silkTouchLevel - 1;
-            double silkTouchBonus = bonusLevels * plugin.getConfigurationHandler().getDouble("mining", "silktouch-chance-boost");
-            dropChance += silkTouchBonus / 100;
 
-            if (dropChance > 1.0) dropChance = 1.0;
+// Apenas Silk Touch >= 2 fornece bônus
+        if (silkTouchLevel >= 2) {
+            int bonusLevels = silkTouchLevel - 1; // Silk Touch 2 -> 1x, Silk Touch 3 -> 2x, etc.
+            double silkTouchBonus = bonusLevels * plugin.getConfigurationHandler().getDouble("mining", "silktouch-chance-boost");
+            dropChance += silkTouchBonus; // Adiciona o bônus à chance base
         }
 
-        // Verificar chance final
-        if (dropChance != 1.0) {
-            double random = Math.random();
-            if (random >= dropChance) {
-                plugin.getConfigurationHandler().sendMessage("mining", "out-of-luck", player);
-                return;
-            }
+// Limitar a chance a 100%
+        if (dropChance > 100.0) {
+            dropChance = 100.0;
+        }
+
+// Verificação final de chance
+        if (Math.random() * 100 >= dropChance) { // Converte chance para escala de 0-100
+            plugin.getConfigurationHandler().sendMessage("mining", "out-of-luck", player);
+            return;
         }
 
         // handle giving spawner

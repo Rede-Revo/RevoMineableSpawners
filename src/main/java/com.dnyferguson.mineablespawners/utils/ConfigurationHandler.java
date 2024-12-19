@@ -115,6 +115,7 @@ public class ConfigurationHandler {
         ints.put("required-level", section.getInt("required-level"));
 
         dbls.put("chance", section.getDouble("chance"));
+        dbls.put("silktouch-chance-boost", section.getDouble("silktouch-chance-boost"));
 
         messages.put("mining", msgs);
         booleans.put("mining", bools);
