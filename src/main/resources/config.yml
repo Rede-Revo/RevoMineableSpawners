@@ -148,6 +148,8 @@ mining:
   chance: 100
   # Should we instead use perm based chances?
   use-perm-based-chances: false
+  # Chance increase based on Silk Touch level
+  silktouch-chance-boost: 25 # Increases 25% per additional level of Silk Touch (starting at level 2)
   # Configure them from best (top) to worse (bottom). Format: <permission>:<% chance from 0-100>
   perm-based-chances:
     - 'minechance.1:100' # 100% chance

@@ -158,8 +158,8 @@ public class SpawnerMineListener implements Listener {
             }
         }
 
-        // check chances
-        double dropChance = 1;
+// check chances
+        double dropChance = 1.0;
         if (plugin.getConfigurationHandler().getBoolean("mining", "use-perm-based-chances") && !permissionChances.isEmpty()) {
             for (String perm : permissionChances.keySet()) {
                 if (player.hasPermission(perm)) {
@@ -170,7 +170,21 @@ public class SpawnerMineListener implements Listener {
         } else {
             dropChance = plugin.getConfigurationHandler().getDouble("mining", "chance") / 100;
         }
-        if (dropChance != 1) {
+
+        int silkTouchLevel = 0;
+        if (itemInHand.containsEnchantment(Enchantment.SILK_TOUCH)) {
+            silkTouchLevel = itemInHand.getEnchantmentLevel(Enchantment.SILK_TOUCH);
+        }
+        if (silkTouchLevel >= 2) {
+            int bonusLevels = silkTouchLevel - 1;
+            double silkTouchBonus = bonusLevels * plugin.getConfigurationHandler().getDouble("mining", "silktouch-chance-boost");
+            dropChance += silkTouchBonus / 100;
+
+            if (dropChance > 1.0) dropChance = 1.0;
+        }
+
+        // Verificar chance final
+        if (dropChance != 1.0) {
             double random = Math.random();
             if (random >= dropChance) {
                 plugin.getConfigurationHandler().sendMessage("mining", "out-of-luck", player);

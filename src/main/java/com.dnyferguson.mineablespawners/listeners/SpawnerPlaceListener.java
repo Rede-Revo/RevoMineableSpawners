@@ -106,7 +106,7 @@ public class SpawnerPlaceListener implements Listener {
 
         if (plugin.getConfigurationHandler().getBoolean("placing", "log")) {
             Location loc = block.getLocation();
-            plugin.getLogger().info("Player " + player.getName() + " placed a " + type.name().toLowerCase() + " spawner at x:" + loc.getX() + ", y:" + loc.getY() + ", z:" + loc.getZ() + " (" + loc.getWorld().getName() + ")");
+            plugin.getLogger().info(player.getName() + " colocou um gerador de " + type.name().toLowerCase() + " em x:" + loc.getX() + ", y:" + loc.getY() + ", z:" + loc.getZ() + " (" + loc.getWorld().getName() + ")");
         }
 
         if (cost > 0) {
